@@ -1,0 +1,14 @@
+{
+"usuarios": [
+{
+"nombre": "nombre1",
+"email": "nombre1@mail.com",
+"clave": "nombre1"
+},
+{
+"nombre": "nombre2",
+"email": "nombre2@mail.com",
+"clave": "nombre2"
+}
+]
+}

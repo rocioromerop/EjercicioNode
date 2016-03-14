@@ -3,9 +3,8 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose'); 
-var crypto = require("crypto");
-var sha256 = crypto.createHash("sha256");
 
+var crypto = require("crypto");
 
 var User = mongoose.model('User'); // pido el modelo
 
@@ -35,20 +34,28 @@ router.post('/', function(req, res){
 
 	var pass = req.body.clave;
 
-	sha256.update(pass, "utf8");
+/*	sha256.update(pass, "utf8");
+
 	var passConHash = sha256.digest("base64");
 
 	console.log('Pass con hash: ' + passConHash);
+*/
+
+
 
 	// cambiar el "pass" por "passConHash"
 
-	var prueba = {
-		"name" : req.body.name,
+	var sha256 = crypto.createHash("sha256");
+	sha256.update("pass", "utf8");//utf8 here
+	var passConHash = sha256.digest("base64");
+
+	var usuarioConHash = {
+		"nombre" : req.body.name,
 		"email" : req.body.email,
 		"clave" : passConHash
 	};
 
-	var user = new User (prueba); // creamos el objeto en memoria, aún no está en la base de datos
+	var user = new User (usuarioConHash); // creamos el objeto en memoria, aún no está en la base de datos
 
 	user.save(function(err, newRow){// lo guardamos en la base de datos
 		//newRow contiene lo que se ha guardado, la confirmación

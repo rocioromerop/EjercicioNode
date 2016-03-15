@@ -17,9 +17,9 @@ var anuncioSchema = mongoose.Schema({
 
 
 // al esquema le metemos un estático
-anuncioSchema.statics.list = function(sort,  cb){
+anuncioSchema.statics.list = function(filters, sort,  cb){
 	// preparamos la query sin ejecutarla
-	var query = Anuncio.find({});
+	var query = Anuncio.find(filters);
 	// añadimos más parámetros a la query
 	query.sort(sort);
 

@@ -20,7 +20,6 @@ require('./models/anuncioModel');
 var apiUsers = require('./routes/api/v1/usuarios');
 var apiAnuncios = require('./routes/api/v1/anuncios');
 
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');

@@ -10,11 +10,10 @@ var User = mongoose.model('User'); // pido el modelo
 
 var auth = require("../../../lib/auth");
 
-//router.use(auth("admin", "pass2")); 
 
 /* GET users listing. */
 
-router.get('/', function(req, res) { 
+router.get('/', auth(), function(req, res) { 
 	var sort = req.query.sort || 'name';
 	User.list(sort, function(err, rows){
 		if(err){
@@ -28,34 +27,20 @@ router.get('/', function(req, res) {
 
 // Añadir un usuario
 router.post('/', function(req, res){
-	//lo hacemos directamente con mongoose:
 
 	//quiero poner el hash a la pass primero, y luego ya guardar lo obtenido
-
+	var usuario= req.body;
 	var pass = req.body.clave;
-
-/*	sha256.update(pass, "utf8");
-
-	var passConHash = sha256.digest("base64");
-
-	console.log('Pass con hash: ' + passConHash);
-*/
-
-
 
 	// cambiar el "pass" por "passConHash"
 
 	var sha256 = crypto.createHash("sha256");
-	sha256.update("pass", "utf8");//utf8 here
+	sha256.update(pass, "utf8");//utf8 here
 	var passConHash = sha256.digest("base64");
 
-	var usuarioConHash = {
-		"nombre" : req.body.name,
-		"email" : req.body.email,
-		"clave" : passConHash
-	};
+	usuario.clave=passConHash;
 
-	var user = new User (usuarioConHash); // creamos el objeto en memoria, aún no está en la base de datos
+	var user = new User (usuario); // creamos el objeto en memoria, aún no está en la base de datos
 
 	user.save(function(err, newRow){// lo guardamos en la base de datos
 		//newRow contiene lo que se ha guardado, la confirmación

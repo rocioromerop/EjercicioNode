@@ -13,9 +13,9 @@ var userSchema = mongoose.Schema({
 });
 
 // al esquema le metemos un estático
-userSchema.statics.list = function(sort,  cb){
+userSchema.statics.list = function(filter, sort,  cb){
 	// preparamos la query sin ejecutarla
-	var query = User.find({});
+	var query = User.find(filter);
 	// añadimos más parámetros a la query
 	query.sort(sort);
 

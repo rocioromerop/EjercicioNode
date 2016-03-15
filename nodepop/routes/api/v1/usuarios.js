@@ -2,7 +2,7 @@
 
 var express = require('express');
 var router = express.Router();
-var mongoose = require('mongoose'); 
+var mongoose = require('mongoose');
 
 var crypto = require("crypto");
 
@@ -13,58 +13,77 @@ var auth = require("../../../lib/auth");
 
 /* GET users listing. */
 
-router.get('/', auth(), function(req, res) { 
-	var sort = req.query.sort || 'name';
-	User.list(sort, function(err, rows){
-		if(err){
-			return res.json({result: false, err: err});
-		}
-		//Cuando estén disponibles, los mando en JSON
-		res.json({result: true, rows: rows});
-		return;
-	});
+router.get('/', auth(), function(req, res) {
+    var sort = req.query.sort || 'name';
+    User.list(sort, function(err, rows) {
+        if (err) {
+            return res.json({ result: false, err: err });
+        }
+        //Cuando estén disponibles, los mando en JSON
+        res.json({ result: true, rows: rows });
+        return;
+    });
 });
 
+//AL AÑADIR UN USUARIO, COMPROBAR SI ESE NOMBRE YA EXISTE O NO!!!! ------------------------------
+
 // Añadir un usuario
-router.post('/', function(req, res){
+router.post('/', function(req, res) {
 
-	//quiero poner el hash a la pass primero, y luego ya guardar lo obtenido
-	var usuario= req.body;
-	var pass = req.body.clave;
+    //quiero poner el hash a la pass primero, y luego ya guardar lo obtenido
+    var usuario = req.body;
+    var pass = req.body.clave;
 
-	// cambiar el "pass" por "passConHash"
+    let filters = {};
 
-	var sha256 = crypto.createHash("sha256");
-	sha256.update(pass, "utf8");//utf8 here
-	var passConHash = sha256.digest("base64");
+    filters.nombre = usuario.nombre;
+    //comprobar si existe ese nombre en la base de datos primero!
+    User.list(filters, 'name', function(err, rows) {
+        if (err) {
+            return console.log("ERROR");
+        }
+        if (rows !== undefined) {
+            return console.log("el usuario ya existe");
+            return;
+        } else {
+            var sha256 = crypto.createHash("sha256");
+            sha256.update(pass, "utf8"); //utf8 here
+            var passConHash = sha256.digest("base64");
 
-	usuario.clave=passConHash;
+            usuario.clave = passConHash;
 
-	var user = new User (usuario); // creamos el objeto en memoria, aún no está en la base de datos
+            var user = new User(usuario); // creamos el objeto en memoria, aún no está en la base de datos
 
-	user.save(function(err, newRow){// lo guardamos en la base de datos
-		//newRow contiene lo que se ha guardado, la confirmación
-		if(err){
-			res.json({result: false, err: err});
-			return;
-		}
-		res.json({result: true, row: newRow});
-		return;
-	});	
+            user.save(function(err, newRow) { // lo guardamos en la base de datos
+                //newRow contiene lo que se ha guardado, la confirmación
+                if (err) {
+                    res.json({ result: false, err: err });
+                    return;
+                }
+                res.json({ result: true, row: newRow });
+                return;
+            });
+        }
+        return;
+    });
+
+    // cambiar el "pass" por "passConHash"
+
+
 });
 
 
 // Actualizar un usuario
-router.put('/:id', function(req, res){
-	var options={};
-	//var options={multi:true};  //para actualizar varios, usar multi
-	User.update({ _id: req.params.id}, {$set: req.body }, options, function(err, data){
-		if(err){
-			return res.json({result: false, err: err});
-		}
-		res.json({result: true, row: data});
+router.put('/:id', function(req, res) {
+    var options = {};
+    //var options={multi:true};  //para actualizar varios, usar multi
+    User.update({ _id: req.params.id }, { $set: req.body }, options, function(err, data) {
+        if (err) {
+            return res.json({ result: false, err: err });
+        }
+        res.json({ result: true, row: data });
 
-	});
+    });
 });
 
 

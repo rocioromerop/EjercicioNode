@@ -22,7 +22,7 @@ anuncioSchema.statics.list = function(filters, sort,  cb){
 	var query = Anuncio.find(filters);
 	// añadimos más parámetros a la query
 	query.sort(sort);
-
+	console.log('filters: ', filters);
 	// se ejecuta la query:
 	query.exec(function(err, rows){
 		if (err){

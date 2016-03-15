@@ -31,8 +31,23 @@ router.get('/', function(req, res) {
 
 	if(req.query.precio != undefined){
 		if( /^-/.test(req.query.precio) ){ 
-			precio.$lte = req.query.precio;
+			precio.$lte = req.query.precio.substring(1);
 		}
+		if( /-$/.test(req.query.precio) ) {
+			precio.$gte = req.query.precio.substring(0, (req.query.precio.length-1));
+		}
+		if(req.query.precio.match(/[0-9]+(-){1}[0-9]+/)){
+			let variable = req.query.precio.match(/[0-9]+(-){1}/);
+			let izquierda = variable[0].substring(0, (variable.length));
+			precio.$gte = izquierda;
+			let variable2= req.query.precio.match(/(-){1}[0-9]+/);
+			let derecha = variable2[0].substring(1);
+			precio.$lte = derecha;
+		}
+		else{
+			precio = req.query.precio;
+		}
+
 		filters.precio=precio;
 	}
 	Anuncio.list(filters, sort, function(err, rows){

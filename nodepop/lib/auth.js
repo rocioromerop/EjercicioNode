@@ -13,7 +13,6 @@ var fn = function(){
 	//hacemos una función que devuelve otra función
 	return function(req, resp, next){ // middleware con el que controlaré la ocupación	
 		var userRequest = basicAuth(req);
-		var bool = false;
 		var i=0;
 		var usuarioEncontrado = null;
 
@@ -28,13 +27,13 @@ var fn = function(){
 		User.list('name', function(err, rows){
 			if(err){
 				console.log('error al leer de la base de datos');
+				return;
 			}
 
 			let contraseñaRecibida = userRequest.pass;
 			
 			for(var i=0; i < (rows.length-1) ; i++){
 				if(rows[i].nombre == userRequest.name){
-					bool=true;
 					usuarioEncontrado = rows[i];
 				}
 			}

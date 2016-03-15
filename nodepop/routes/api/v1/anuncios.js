@@ -1,5 +1,7 @@
 'use strict';
 
+
+
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose'); 
@@ -10,14 +12,46 @@ var auth = require("../../../lib/auth");
 
 router.use(auth());  // esta ruta necesita autorización
 
-/* GET users listing. */
+/**
+ * @api {get} /user/:id Request User information
+ * @apiName getAnuncios
+ * @apiGroup anuncios
+ *
+ * @apiParam {venta} filtro por tipo de anuncio
+ * @apiParam {tags} filtro por tags 
+ * @apiParam {precio} filtro por precio 
+ * @apiParam {nombre} filtro por nombre
+ * 
+ * @apiSuccess {json} json({result: true, rows: rows}
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "result":true,"rows":[{	
+				"_id":"56e6b003056d796c052a75c7","nombre":"Bicicleta","venta":true,"precio":230.15,"foto":"bici.jpg","__v":0,"tags":["lifestyle","motor"]
+				}
+				,
+				{
+				"_id":"56e6b003056d796c052a75c8","nombre":"iPhone 3GS","venta":false,"precio":50,"foto":"iphone.png","__v":0,"tags":["lifestyle","mobile"]
+				}]
+				}
+ *     }
+ *
+ * @apiError 
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "error": "UserNotFound"
+ *     }
+ */
 
 router.get('/', function(req, res) { 
 	let sort = req.query.sort || 'name';
 	let filters = {};
 	let precio = {};
 
-	if(req.query.venta != undefined){
+	if(req.query.venta != undefined && (req.query.venta === 'false' || req.query.venta === 'true')){
 		filters.venta = req.query.venta;
 	}
 

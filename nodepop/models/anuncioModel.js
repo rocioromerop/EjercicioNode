@@ -17,19 +17,26 @@ var anuncioSchema = mongoose.Schema({
 
 
 // al esquema le metemos un estático
-anuncioSchema.statics.list = function(filters, sort,  cb){
+anuncioSchema.statics.list = function(start, limit, filters, sort,  cb){
 	// preparamos la query sin ejecutarla
-	var query = Anuncio.find(filters);
+	let query = Anuncio.find(filters);
 	// añadimos más parámetros a la query
+	if(limit != 0){
+		query.limit(limit);
+	}
+
 	query.sort(sort);
-	console.log('filters: ', filters);
+	
+	if(start != 0){
+		query.skip(start);
+	}
 	// se ejecuta la query:
 	query.exec(function(err, rows){
 		if (err){
 			cb(err);
 			return;
 		}
-		cb(null,rows);
+		cb(null, rows);
 		return;
 	});
 

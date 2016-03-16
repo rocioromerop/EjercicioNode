@@ -6,7 +6,7 @@ var mongoose = require('mongoose');
 
 //Creo el esquema
 
-var userSchema = mongoose.Schema({
+let userSchema = mongoose.Schema({
 	nombre: String,
 	email: String,
 	clave: String
@@ -14,10 +14,11 @@ var userSchema = mongoose.Schema({
 
 // al esquema le metemos un estático
 userSchema.statics.list = function(filter, sort,  cb){
+	let sortAplicar = sort || "name";
 	// preparamos la query sin ejecutarla
-	var query = User.find(filter);
+	let query = User.find(filter);
 	// añadimos más parámetros a la query
-	query.sort(sort);
+	query.sort(sortAplicar);
 
 	// se ejecuta la query:
 	query.exec(function(err, rows){

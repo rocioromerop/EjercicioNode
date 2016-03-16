@@ -24,7 +24,7 @@ var fn = function(){
 
 		// Mirar si el usuario y la contraseña están en la base de datos
 
-		User.list('name', function(err, rows){
+		User.list({nombre : userRequest.name}, 'nombre', function(err, rows){
 			if(err){
 				console.log('error al leer de la base de datos');
 				return;
@@ -32,14 +32,16 @@ var fn = function(){
 
 			let contraseñaRecibida = userRequest.pass;
 			
-			for(var i=0; i < (rows.length-1) ; i++){
-				if(rows[i].nombre == userRequest.name){
-					usuarioEncontrado = rows[i];
-				}
+			if(rows.length !== 0){
+				usuarioEncontrado = rows[0];
+			}
+			else{
+				return resp.json({ result: false, err: "El usuario no existe o la contraseña no coincide"});
 			}
 			// Miro si la contraseña es igual a la recibida, primero tengo que hashearla
 
-			let contraseñaUsuarioBD = rows[i].clave;
+			let contraseñaUsuarioBD = usuarioEncontrado.clave;
+
 			var sha256 = crypto.createHash("sha256");
 			sha256.update(contraseñaRecibida, "utf8");//utf8 here
 			var passConHash = sha256.digest("base64");

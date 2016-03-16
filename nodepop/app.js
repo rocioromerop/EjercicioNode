@@ -32,6 +32,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/images/anuncios/', express.static(__dirname + '/public/images'));
+
+//lo primero es la 'ficticia' y lo segundo la 'real'
+
 // Rutas de web
 app.use('/', routes);
 app.use('/users', users);

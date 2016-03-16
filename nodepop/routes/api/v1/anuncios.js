@@ -11,7 +11,7 @@ var auth = require("../../../lib/auth");
 router.use(auth());  // esta ruta necesita autorización
 
 /**
- * @api {get} Para obtener los anuncios 
+ * @api get Para obtener los anuncios 
  * @apiName getAnuncios
  * @apiGroup anuncios
  *
@@ -101,6 +101,22 @@ router.get('/', function(req, res) {
 	});
 });
 
+/**
+ * @api get/tags Para obtener los tags de los anuncios
+ * @apiName getTags
+ * @apiGroup anuncios
+ *
+ * @apiSuccess {json} {result: true, rows: resultadoSinRepetir}
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ 		"result":true,"rows":["prueba"," prueba2","prueba, prueba2","[prueba]","lifestyle","mobile","motor"]
+ 		}
+ *
+ * @apiError json {result: false, err: err};
+ */
+
 router.get('/tags', function(req, res) { 
 	Anuncio.list('0', '0', {}, 'name', function(err, rows){
 		if(err){
@@ -121,7 +137,6 @@ router.get('/tags', function(req, res) {
 				else{
 					resultado = rows[i].tags.concat(resultado);
 				}
-				
 			}
 		}
 
@@ -134,6 +149,45 @@ router.get('/tags', function(req, res) {
 
 
 // Para añadir un anuncio -> Todos los elementos son obligatorios. El formato para recibir los tags es con comas.
+
+
+/**
+ * @api {post} Para añadir un anuncio. Todos los elementos son obligatorios. El formato para recibir los tags es con comas
+
+ * @apiName postAnuncios
+ * @apiGroup anuncios
+ *
+ * @apiParam {nombre} nombre del anuncio
+ * @apiParam {venta} puede ser = true o = false, identifica si es vender o comprar
+ * @apiParam {precio} precio del anuncio
+ * @apiParam {foto} foto del anuncio
+ * @apiParam {tags} tags del anuncio
+
+ * @apiSuccess json { result: true, row: newRow }
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+		  "result": true,
+		  "row": {
+		    "__v": 0,
+		    "nombre": "anuncio1",
+		    "venta": true,
+		    "precio": 9999,
+		    "foto": "foto.jpg",
+		    "_id": "56e951ab1bbe62c01f677907",
+		    "tags": [
+		      "prueba",
+		      " prueba2"
+		    ]
+		  }
+		}
+ *       
+ *     
+ *
+ * @apiError json {result: false, err: err};
+ */
+
 
 router.post('/', function(req, res) { 
 

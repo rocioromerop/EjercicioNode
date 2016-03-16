@@ -18,6 +18,10 @@ var anuncioSchema = mongoose.Schema({
 
 // al esquema le metemos un estático
 anuncioSchema.statics.list = function(start, limit, filters, sort,  cb){
+
+	console.log('limit', limit);
+	console.log('start', start);
+
 	// preparamos la query sin ejecutarla
 	let query = Anuncio.find(filters);
 	// añadimos más parámetros a la query
@@ -26,10 +30,12 @@ anuncioSchema.statics.list = function(start, limit, filters, sort,  cb){
 	}
 
 	query.sort(sort);
-	
+
 	if(start != 0){
 		query.skip(start);
 	}
+
+
 	// se ejecuta la query:
 	query.exec(function(err, rows){
 		if (err){

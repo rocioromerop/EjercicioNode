@@ -43,22 +43,20 @@ router.get('/', function(req, res) {
 	let sort = req.query.sort || 'name';
 	let filters = {};
 	let precio = {};
-	let start;
-	let limit;
+	let start = 0;
+	let limit = 0;
 
 	// PARA LA PAGINACIÓN
 	if(req.query.start != undefined){
-		start = req.query.start;
+		start = parseInt(req.query.start);
 	}
-	else{
-		start = 0; //decido que si no me dicen nada, que empiece desde el principio
-	}
+
 	if(req.query.limit != undefined){
-		limit = req.query.limit;
+		limit = parseInt(req.query.limit);
 	}
-	else{
-		limit = 0; //decido que si no me dicen nada, no habrá límite, es decir, todos los elementos que existen en la base de datos
-	}
+	
+	console.log(limit);
+	console.log(start);
 
 	// PARA LOS FILTROS
 	if(req.query.venta != undefined && (req.query.venta === 'false' || req.query.venta === 'true')){
@@ -93,7 +91,7 @@ router.get('/', function(req, res) {
 		}
 
 		filters.precio=precio;
-	}
+		}
 	Anuncio.list(start, limit, filters, sort, function(err, rows){
 		if(err){
 			return res.json({result: false, err: 'Hay un error con la base de datos'});

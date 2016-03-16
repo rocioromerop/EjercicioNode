@@ -54,9 +54,6 @@ router.get('/', function(req, res) {
 	if(req.query.limit != undefined){
 		limit = parseInt(req.query.limit);
 	}
-	
-	console.log(limit);
-	console.log(start);
 
 	// PARA LOS FILTROS
 	if(req.query.venta != undefined && (req.query.venta === 'false' || req.query.venta === 'true')){
@@ -72,25 +69,28 @@ router.get('/', function(req, res) {
 	}
 
 	if(req.query.precio != undefined){
-		if( /^-/.test(req.query.precio) ){ 
-			precio.$lte = req.query.precio.substring(1);
+
+		var pre = req.query.precio.split("-");
+
+		if(pre[1]==""){ //x-
+			precio.$gte=pre[0];
 		}
-		if( /-$/.test(req.query.precio) ) {
-			precio.$gte = req.query.precio.substring(0, (req.query.precio.length-1));
+
+		if(pre[0]==""){//-x
+			precio.$lte=pre[1];
 		}
-		if(req.query.precio.match(/[0-9]+(-){1}[0-9]+/)){
-			let variable = req.query.precio.match(/[0-9]+(-){1}/);
-			let izquierda = variable[0].substring(0, (variable.length));
-			precio.$gte = izquierda;
-			let variable2= req.query.precio.match(/(-){1}[0-9]+/);
-			let derecha = variable2[0].substring(1);
-			precio.$lte = derecha;
+
+		if(pre[1] != "" && pre[0] != ""){ //x-y
+			precio.$gte=pre[0];
+			precio.$lte=pre[1];
 		}
-		else{
-			precio = req.query.precio;
+
+		if(pre[1] == undefined){
+			precio=pre[0];
 		}
 
 		filters.precio=precio;
+
 		}
 	Anuncio.list(start, limit, filters, sort, function(err, rows){
 		if(err){

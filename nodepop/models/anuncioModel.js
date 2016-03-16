@@ -19,9 +19,6 @@ var anuncioSchema = mongoose.Schema({
 // al esquema le metemos un estático
 anuncioSchema.statics.list = function(start, limit, filters, sort,  cb){
 
-	console.log('limit', limit);
-	console.log('start', start);
-
 	// preparamos la query sin ejecutarla
 	let query = Anuncio.find(filters);
 	// añadimos más parámetros a la query
@@ -34,7 +31,6 @@ anuncioSchema.statics.list = function(start, limit, filters, sort,  cb){
 	if(start != 0){
 		query.skip(start);
 	}
-
 
 	// se ejecuta la query:
 	query.exec(function(err, rows){
@@ -68,29 +64,3 @@ var anuncio = {
 
 module.exports = anuncio; 
 
-/**
- * @api {get} /user/:id Get User information
- * @apiVersion 0.1.0
- * @apiName GetUser
- * @apiGroup User
- *
- * @apiParam {Number} id Users unique ID.
- *
- * @apiSuccess {String} firstname Firstname of the User.
- * @apiSuccess {String} lastname  Lastname of the User.
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *       "firstname": "John",
- *       "lastname": "Doe"
- *     }
- *
- * @apiError UserNotFound The id of the User was not found.
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 404 Not Found
- *     {
- *       "error": "UserNotFound"
- *     }
- */

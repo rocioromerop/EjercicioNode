@@ -21,7 +21,7 @@ router.use(auth());  // esta ruta necesita autorización
  * @apiParam {nombre} filtro por nombre
  * @apiParam {sort} para sobre qué elemento se filtra 
 
- * @apiSuccess json {result: true, rows: rows}
+ * @apiSuccess json result: true, rows: rows
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -36,7 +36,7 @@ router.use(auth());  // esta ruta necesita autorización
 				}
  *     }
  *
- * @apiError json {result: false, err: err};
+ * @apiError json result: false, err: err
  */
 
 router.get('/', function(req, res) { 
@@ -106,7 +106,7 @@ router.get('/', function(req, res) {
  * @apiName getTags
  * @apiGroup anuncios
  *
- * @apiSuccess {json} {result: true, rows: resultadoSinRepetir}
+ * @apiSuccess {json} result: true, rows: resultadoSinRepetir
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -114,7 +114,7 @@ router.get('/', function(req, res) {
  		"result":true,"rows":["prueba"," prueba2","prueba, prueba2","[prueba]","lifestyle","mobile","motor"]
  		}
  *
- * @apiError json {result: false, err: err};
+ * @apiError json result: false, err: err
  */
 
 router.get('/tags', function(req, res) { 
@@ -148,9 +148,6 @@ router.get('/tags', function(req, res) {
 });
 
 
-// Para añadir un anuncio -> Todos los elementos son obligatorios. El formato para recibir los tags es con comas.
-
-
 /**
  * @api {post} Para añadir un anuncio. Todos los elementos son obligatorios. El formato para recibir los tags es con comas
 
@@ -163,7 +160,7 @@ router.get('/tags', function(req, res) {
  * @apiParam {foto} foto del anuncio
  * @apiParam {tags} tags del anuncio
 
- * @apiSuccess json { result: true, row: newRow }
+ * @apiSuccess json result: true, row: newRow 
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -185,7 +182,7 @@ router.get('/tags', function(req, res) {
  *       
  *     
  *
- * @apiError json {result: false, err: err};
+ * @apiError json result: false, err: err
  */
 
 
@@ -223,6 +220,37 @@ router.post('/', function(req, res) {
                 res.json({ result: true, row: newRow });
                 return;
             });
+});
+
+/**
+ * @api {delete} Para eliminar un anuncio. Se ha de pasar el id del anuncio
+
+ * @apiName deleteAnuncios
+ * @apiGroup anuncios
+ *
+ * @apiParam {id} id del anuncio
+
+ * @apiSuccess json result: true, row: newRow 
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+		  result: true, resp: "Anuncio eliminado correctamente"
+		}
+ *       
+ *     
+ *
+ * @apiError json result: false, err: 'No se ha podido eliminar el anuncio (ha ocurrido un problema en la base de datos, o el anuncio no existe'
+ */
+
+router.delete('/:id', function(req, res){
+	let nombre = req.params.nombre;
+	Anuncio.remove({_id: req.params.id}, function(err){
+		if(err) return res.json({result: false, err: 'No se ha podido eliminar el anuncio (ha ocurrido un problema en la base de datos, o el anuncio no existe'});
+		res.json({result: true, resp: "Anuncio eliminado correctamente"});
+		return;
+	});
+
 });
 
 module.exports = router;

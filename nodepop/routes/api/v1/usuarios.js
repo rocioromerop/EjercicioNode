@@ -9,6 +9,7 @@ var crypto = require("crypto");
 var User = mongoose.model('User'); // pido el modelo
 
 var auth = require("../../../lib/auth");
+
 /**
  * @api {get} Para obtener los anuncios 
  * @apiName getAnuncios
@@ -20,7 +21,7 @@ var auth = require("../../../lib/auth");
  * @apiParam {nombre} filtro por nombre
  * @apiParam {sort} para sobre qué elemento se filtra 
 
- * @apiSuccess json {result: true, rows: rows}
+ * @apiSuccess json result: true, rows: rows
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -35,7 +36,7 @@ var auth = require("../../../lib/auth");
                 }
  *     }
  *
- * @apiError json {result: false, err: err};
+ * @apiError json result: false, err: err
  */
 
 router.get('/', auth(), function(req, res) {
@@ -59,7 +60,7 @@ router.get('/', auth(), function(req, res) {
  * @apiParam {nombre} nombre del usuario a registrar
  * @apiParam {clave} clave del usuario a registrar
  *
- * @apiSuccess json {result: true, row: newRow} 
+ * @apiSuccess json result: true, row: newRow
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -74,7 +75,7 @@ router.get('/', auth(), function(req, res) {
       }
 }
  *
- * @apiError json {result: false, err: err} 
+ * @apiError json result: false, err: err
  *
  * @apiErrorExample {json} Error-Response:
  *     {
@@ -82,6 +83,7 @@ router.get('/', auth(), function(req, res) {
  *       "err": "El usuario ya está registrado"
  *      }
  */
+
 router.post('/', function(req, res) {
 
     //quiero poner el hash a la pass primero, y luego ya guardar lo obtenido
@@ -127,11 +129,12 @@ router.post('/', function(req, res) {
  * @apiName putUsuarios
  * @apiGroup usuarios
  *
- * @apiParam {nombre} nombre del usuario 
- * @apiParam {clave} clave del usuario
- * @apiParam {email} email del usuario
+ * @apiParam {nombre} nombre del usuario a actualiza
+ * @apiParam {id} id del usuario a actualiza
+ * @apiParam {clave} clave del usuario a actualiza
+ * @apiParam {email} email del usuario a actualiza
  *
- * @apiSuccess json {result: true, row: newRow} 
+ * @apiSuccess json result: true, row: newRow 
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -146,7 +149,7 @@ router.post('/', function(req, res) {
       }
 }
  *
- * @apiError json {result: false, err: err} 
+ * @apiError json result: false, err: err 
  *
  * @apiErrorExample {json} Error-Response:
  *     {
@@ -155,7 +158,6 @@ router.post('/', function(req, res) {
  *      }
  */
 
-// Actualizar un usuario
 router.put('/:id', function(req, res) {
     var options = {};
     //var options={multi:true};  //para actualizar varios, usar multi
@@ -166,6 +168,39 @@ router.put('/:id', function(req, res) {
         res.json({ result: true, row: data });
 
     });
+});
+
+
+/**
+ * @api {delete} Para eliminar un usuario existente
+ *
+ * @apiName deleteUsuarios
+ * @apiGroup usuarios
+ *
+ * @apiParam {id} id del usuario a eliminar
+ *
+ * @apiSuccess json result: true, row: newRow 
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *    {
+        "result": true,
+        "resp": "Usuario eliminado correctamente"
+      }
+
+ *
+ * @apiError json result: false, err: No se ha podido eliminar el usuario (ha ocurrido un problema en la base de datos
+ *
+ */
+
+router.delete('/:id', function(req, res){
+    let nombre = req.params.nombre;
+    User.remove({_id: req.params.id}, function(err){
+        if(err) return res.json({result: false, err: 'No se ha podido eliminar el usuario (ha ocurrido un problema en la base de datos, o el usuario no existe'});
+        res.json({result: true, resp: "Usuario eliminado correctamente"});
+        return;
+    });
+
 });
 
 

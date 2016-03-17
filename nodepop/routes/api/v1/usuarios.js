@@ -11,32 +11,47 @@ var User = mongoose.model('User'); // pido el modelo
 var auth = require("../../../lib/auth");
 
 /**
- * @api {get} Para obtener los anuncios 
- * @apiName getAnuncios
- * @apiGroup anuncios
+ * @api {get} /usuarios/ Obtener usuarios
+ * @apiName getUsuarios
+ * @apiDescription Para obtener los usuarios existentes. 
+ * @apiGroup usuarios
+ * @apiPermission autentication
+ * @apiSuccess {json} result: true, rows: rows
+ * @apiVersion 1.0.0
  *
- * @apiParam {venta} filtro por tipo de anuncio
- * @apiParam {tags} filtro por tags 
- * @apiParam {precio} filtro por precio 
- * @apiParam {nombre} filtro por nombre
- * @apiParam {sort} para sobre qué elemento se filtra 
-
- * @apiSuccess json result: true, rows: rows
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/usuarios
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "result":true,"rows":[{    
-                "_id":"56e6b003056d796c052a75c7","nombre":"Bicicleta","venta":true,"precio":230.15,"foto":"bici.jpg","__v":0,"tags":["lifestyle","motor"]
-                }
-                ,
-                {
-                "_id":"56e6b003056d796c052a75c8","nombre":"iPhone 3GS","venta":false,"precio":50,"foto":"iphone.png","__v":0,"tags":["lifestyle","mobile"]
-                }]
-                }
- *     }
+          "result": true,
+          "rows": [
+            {
+              "_id": "56e91e130ae094b01b56c532",
+              "nombre": "rocio",
+              "email": "rocio",
+              "clave": "LJ0/L3lYpZwdf1rb40LiA1u05qzrve78aOtyusIxkdQ=",
+              "__v": 0
+            },
+            {
+              "_id": "56e91e240ae094b01b56c533",
+              "nombre": "prueba",
+              "email": "prueba",
+              "clave": "ZV54ZnTZ0+d7wF7R3je0tryJ94iCn588Z552h7QQyJs=",
+              "__v": 0
+            },
+            {
+              "_id": "56e91e2c0ae094b01b56c534",
+              "nombre": "prueba1",
+              "email": "prueba1",
+              "clave": "75lOcmKni5fAOa31ghTuffEHaCSn5HU4lIumGuArBcc=",
+              "__v": 0
+            }
+          ]
+        }
  *
- * @apiError json result: false, err: err
+ * @apiError {json} result: false, err: err
  */
 
 router.get('/', auth(), function(req, res) {
@@ -52,15 +67,20 @@ router.get('/', auth(), function(req, res) {
 });
 
 /**
- * @api {post} Para registrar un usuario nuevo. Primero comprueba si ese usuario existe o no ya en la base de datos, y si ya existe no te deja añadirlo. La clave se guardará con hash sha256.
+ * @api {post} /usuarios/ Regitrar usuario
  *
  * @apiName postUsuario
  * @apiGroup usuarios
+ * @apiDescription Para registrar un usuario nuevo. Primero comprueba si ese usuario existe o no ya en la base de datos, y si ya existe no te deja añadirlo. La clave se guardará con hash sha256.
+ * @apiPermission none
+ * @apiVersion 1.0.0
+ * @apiParam {string} nombre nombre del usuario a registrar
+ * @apiParam {string} clave clave del usuario a registrar
  *
- * @apiParam {nombre} nombre del usuario a registrar
- * @apiParam {clave} clave del usuario a registrar
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/usuarios
  *
- * @apiSuccess json result: true, row: newRow
+ * @apiSuccess {json} result: true, row: newRow
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -75,7 +95,7 @@ router.get('/', auth(), function(req, res) {
       }
 }
  *
- * @apiError json result: false, err: err
+ * @apiError {json} result: false, err: err
  *
  * @apiErrorExample {json} Error-Response:
  *     {
@@ -124,17 +144,22 @@ router.post('/', function(req, res) {
 });
 
 /**
- * @api {put} Para actualizar un usuario existente
+ * @api {put} /usuarios/:id Actualizar usuario
  *
  * @apiName putUsuarios
  * @apiGroup usuarios
+ * @apiDescription Para actualizar un usuario existente, se le pasa el id del usuario a actualizar
+ * @apiPermission autentication
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/usuarios/56e91e240ae094b01b56c533
  *
- * @apiParam {nombre} nombre del usuario a actualiza
- * @apiParam {id} id del usuario a actualiza
- * @apiParam {clave} clave del usuario a actualiza
- * @apiParam {email} email del usuario a actualiza
+ * @apiVersion 1.0.0
+ * @apiParam {string} nombre nombre del usuario a actualizar
+ * @apiParam {string} id id del usuario a actualizar
+ * @apiParam {string} clave clave del usuario a actualizar
+ * @apiParam {string} email email del usuario a actualizar
  *
- * @apiSuccess json result: true, row: newRow 
+ * @apiSuccess {json} result: true, row: newRow 
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -149,37 +174,52 @@ router.post('/', function(req, res) {
       }
 }
  *
- * @apiError json result: false, err: err 
+ * @apiError {json} result: false, err: err 
  *
  * @apiErrorExample {json} Error-Response:
  *     {
  *       "result": false,
- *       "err": "El usuario ya está registrado"
+ *       "err": "El usuario El usuario ya está cogido"
  *      }
  */
 
 router.put('/:id', function(req, res) {
     var options = {};
-    //var options={multi:true};  //para actualizar varios, usar multi
-    User.update({ _id: req.params.id }, { $set: req.body }, options, function(err, data) {
+    User.findOne({nombre: req.body.nombre}, function(err, rows){
+      if(err){
+        return res.json({result: false, err: err});
+      }
+      console.log(rows);
+      if(rows==null){
+        User.update({ _id: req.params.id }, { $set: req.body }, options, function(err, data) {
         if (err) {
-            return res.json({ result: false, err: err });
+            return res.json({ result: false, err: err});
         }
-        res.json({ result: true, row: data });
-
+        return res.json({ result: true, row: data });
+        });
+      }
+      else{
+        return res.json({result: false, err: 'El usuario ya está cogido'});
+      }
+      
     });
-});
+    });    
 
 
 /**
- * @api {delete} Para eliminar un usuario existente
+ * @api {delete} /usuarios/:id Eliminar usuario
  *
  * @apiName deleteUsuarios
  * @apiGroup usuarios
+ * @apiVersion 1.0.0
+ * @apiDescription Para eliminar un usuario existente, hay que pasarle el id
+ * @apiPermission autentication
+ * @apiParam {id} id id del usuario a eliminar
  *
- * @apiParam {id} id del usuario a eliminar
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/usuarios/56e91e240ae094b01b56c533
  *
- * @apiSuccess json result: true, row: newRow 
+ * @apiSuccess {json} result: true, row: newRow 
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -189,7 +229,7 @@ router.put('/:id', function(req, res) {
       }
 
  *
- * @apiError json result: false, err: No se ha podido eliminar el usuario (ha ocurrido un problema en la base de datos
+ * @apiError {json} result: false, err: No se ha podido eliminar el usuario (ha ocurrido un problema en la base de datos
  *
  */
 

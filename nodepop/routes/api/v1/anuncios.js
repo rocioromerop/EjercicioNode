@@ -11,15 +11,24 @@ var auth = require("../../../lib/auth");
 router.use(auth());  // esta ruta necesita autorización
 
 /**
- * @api get Para obtener los anuncios 
+ * @api {get} /anuncios/ Obtener los anuncios
  * @apiName getAnuncios
  * @apiGroup anuncios
+ * @apiVersion 1.0.0
+ * @apiDescription Para obtener todos los anuncios. Se pueden dar los filtros por venta, tags, precio, nombre y orden. Para cada elemento es: 
+ 						Para venta, se puede poner true si es venta y false si es que se busca 
+ 						Para nombre, mostrará todos los que tengan ese nombre 
+ 						Para tags, mostrará todos los que tengan esos tags 
+ 						Para precio, el formato es: -50 devolvería los que tienen el precio menor o igual de 50, 50- devolvería los que tienen el precio mayor o igual que 50, 50 devolvería los que tienen el precio exactamente 50, 50-80 devolvería los que tienen precio entre 50 y 80
+ * @apiPermission autentication
  *
- * @apiParam {venta} filtro por tipo de anuncio
- * @apiParam {tags} filtro por tags 
- * @apiParam {precio} filtro por precio 
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/anuncios
+ * @apiParam {boolean} venta filtro por tipo de anuncio
+ * @apiParam {string} tags filtro por tags 
+ * @apiParam {number} precio filtro por precio 
  * @apiParam {nombre} filtro por nombre
- * @apiParam {sort} para sobre qué elemento se filtra 
+ * @apiParam {string} sort para sobre qué elemento se filtra 
 
  * @apiSuccess json result: true, rows: rows
  *
@@ -102,11 +111,16 @@ router.get('/', function(req, res) {
 });
 
 /**
- * @api get/tags Para obtener los tags de los anuncios
+ * @api {get} /anuncios/tags Obtener los tags de los anuncios 
  * @apiName getTags
  * @apiGroup anuncios
- *
+ * @apiDescription Para obtener los tags de los anuncios 
  * @apiSuccess {json} result: true, rows: resultadoSinRepetir
+ * @apiVersion 1.0.0
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/anuncios/tags
+ *
+ * @apiPermission autentication
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -115,6 +129,7 @@ router.get('/', function(req, res) {
  		}
  *
  * @apiError json result: false, err: err
+
  */
 
 router.get('/tags', function(req, res) { 
@@ -149,16 +164,20 @@ router.get('/tags', function(req, res) {
 
 
 /**
- * @api {post} Para añadir un anuncio. Todos los elementos son obligatorios. El formato para recibir los tags es con comas
+ * @api {post} /anuncios/ Añadir un anuncio
 
  * @apiName postAnuncios
  * @apiGroup anuncios
- *
- * @apiParam {nombre} nombre del anuncio
- * @apiParam {venta} puede ser = true o = false, identifica si es vender o comprar
- * @apiParam {precio} precio del anuncio
- * @apiParam {foto} foto del anuncio
- * @apiParam {tags} tags del anuncio
+ * @apiDescription Para añadir un anuncio. Todos los elementos son obligatorios. El formato para recibir los tags es con comas
+ * @apiPermission autentication
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/anuncios/
+ * @apiVersion 1.0.0
+ * @apiParam {string} nombre nombre del anuncio
+ * @apiParam {boolean} venta puede ser = true o = false, identifica si es vender o buscar 
+ * @apiParam {number} precio precio del anuncio
+ * @apiParam {string} foto foto del anuncio
+ * @apiParam {string} tags tags del anuncio
 
  * @apiSuccess json result: true, row: newRow 
  *
@@ -183,6 +202,17 @@ router.get('/tags', function(req, res) {
  *     
  *
  * @apiError json result: false, err: err
+ @apiErrorExample Error-Response:
+ {
+  "result": false,
+  "err": "Es necesario introducir todos los elementos al anuncio (nombre, venta, precio, foto, tags)"
+}
+@apiErrorExample Error-Response:
+ {
+  "result": false,
+  "err": "Ha ocurrido un error con la base de datos"
+}
+
  */
 
 
@@ -214,7 +244,7 @@ router.post('/', function(req, res) {
 	anuncio.save(function(err, newRow) { // lo guardamos en la base de datos
                 //newRow contiene lo que se ha guardado, la confirmación
                 if (err) {
-                    res.json({ result: false, err: err });
+                    res.json({ result: false, err: 'Ha ocurrido un error con la base de datos' });
                     return;
                 }
                 res.json({ result: true, row: newRow });
@@ -223,12 +253,16 @@ router.post('/', function(req, res) {
 });
 
 /**
- * @api {delete} Para eliminar un anuncio. Se ha de pasar el id del anuncio
-
+ * @api {delete} /anuncios/:id Eliminar anuncio
+ * @apiVersion 1.0.0
  * @apiName deleteAnuncios
  * @apiGroup anuncios
+ * @apiDescription Para eliminar un anuncio. Se ha de pasar el id del anuncio
+ * @apiPermission autentication
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/anuncios/56e6b003056d796c052a75c8
  *
- * @apiParam {id} id del anuncio
+ * @apiParam {string} id id del anuncio
 
  * @apiSuccess json result: true, row: newRow 
  *
@@ -240,7 +274,13 @@ router.post('/', function(req, res) {
  *       
  *     
  *
- * @apiError json result: false, err: 'No se ha podido eliminar el anuncio (ha ocurrido un problema en la base de datos, o el anuncio no existe'
+ * @apiError {json} result: false, err: 'No se ha podido eliminar el anuncio (ha ocurrido un problema en la base de datos, o el anuncio no existe'
+
+ @apiErrorExample Error-Response:
+ {
+  "result": false,
+  "err": "No se ha podido eliminar el anuncio (ha ocurrido un problema en la base de datos, o el anuncio no existe"
+}
  */
 
 router.delete('/:id', function(req, res){
@@ -253,4 +293,59 @@ router.delete('/:id', function(req, res){
 
 });
 
+/**
+ * @api {put} /anuncios/:id Modificar anuncio
+ *
+ * @apiName updateAnuncio
+ * @apiGroup anuncios
+ * @apiDescription Para modificar un anuncio. Se ha de pasar el id del anuncio a modificar
+ * @apiPermission autentication
+ *
+ * @apiVersion 1.0.0
+ * @apiParam {string} id id del anuncio a modificar
+
+   @apiParam {string} nombre modificar el nombre del anuncio
+   @apiParam {boolean} venta modificar true para venta y false para búsqueda
+   @apiParam {number} precio modificar el precio del anuncio
+   @apiParam {string} foto modificar la foto del anuncio
+   @apiParam {string} tags modificar los tags del anuncio
+
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/anuncios/56e6b003056d796c052a75c8
+ *
+ * @apiSuccess json result: true, row: newRow 
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+		  result: true, resp: "Anuncio modificado correctamente"
+		}
+ *       
+ *     
+ *
+ * @apiError {json} result: false, err: 'No se ha podido modificar el anuncio (ha ocurrido un problema en la base de datos, o el anuncio no existe'
+
+ @apiErrorExample Error-Response:
+ {
+  "result": false,
+  "err": "No se ha podido modificar el anuncio (ha ocurrido un problema en la base de datos, o el anuncio no existe"
+}
+ */
+
+router.put('/:id', function(req, res){
+	  Anuncio.update({ _id: req.params.id }, { $set: req.body }, {}, function(err, data) {
+        if (err) {
+            return res.json({ result: false, err: 'No se ha podido modificar el anuncio (ha ocurrido un problema en la base de datos, o el anuncio no existe' });
+        }
+        res.json({ result: true, row: 'Anuncio modificado correctamente' });
+    });
+});
+
+
 module.exports = router;
+
+
+
+
+
+

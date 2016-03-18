@@ -3,6 +3,7 @@ define({ "api": [
     "type": "delete",
     "url": "/anuncios/:id",
     "title": "Eliminar anuncio",
+    "version": "1.0.0",
     "name": "deleteAnuncios",
     "group": "anuncios",
     "description": "<p>Para eliminar un anuncio. Se ha de pasar el id del anuncio</p>",
@@ -70,7 +71,6 @@ define({ "api": [
         }
       ]
     },
-    "version": "0.0.0",
     "filename": "routes/api/v1/anuncios.js",
     "groupTitle": "anuncios"
   },
@@ -80,6 +80,7 @@ define({ "api": [
     "title": "Obtener los anuncios",
     "name": "getAnuncios",
     "group": "anuncios",
+    "version": "1.0.0",
     "description": "<p>Para obtener todos los anuncios. Se pueden dar los filtros por venta, tags, precio, nombre y orden. Para cada elemento es: \t\t\t\t\t\tPara venta, se puede poner true si es venta y false si es que se busca \t\t\t\t\t\tPara nombre, mostrará todos los que tengan ese nombre \t\t\t\t\t\tPara tags, mostrará todos los que tengan esos tags \t\t\t\t\t\tPara precio, el formato es: -50 devolvería los que tienen el precio menor o igual de 50, 50- devolvería los que tienen el precio mayor o igual que 50, 50 devolvería los que tienen el precio exactamente 50, 50-80 devolvería los que tienen precio entre 50 y 80</p>",
     "permission": [
       {
@@ -165,7 +166,6 @@ define({ "api": [
         ]
       }
     },
-    "version": "0.0.0",
     "filename": "routes/api/v1/anuncios.js",
     "groupTitle": "anuncios"
   },
@@ -196,6 +196,7 @@ define({ "api": [
         }
       ]
     },
+    "version": "1.0.0",
     "examples": [
       {
         "title": "Example usage:",
@@ -220,7 +221,6 @@ define({ "api": [
         ]
       }
     },
-    "version": "0.0.0",
     "filename": "routes/api/v1/anuncios.js",
     "groupTitle": "anuncios"
   },
@@ -243,6 +243,7 @@ define({ "api": [
         "type": "curl"
       }
     ],
+    "version": "1.0.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -327,7 +328,6 @@ define({ "api": [
         }
       ]
     },
-    "version": "0.0.0",
     "filename": "routes/api/v1/anuncios.js",
     "groupTitle": "anuncios"
   },
@@ -343,6 +343,7 @@ define({ "api": [
         "name": "autentication"
       }
     ],
+    "version": "1.0.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -437,7 +438,6 @@ define({ "api": [
         }
       ]
     },
-    "version": "0.0.0",
     "filename": "routes/api/v1/anuncios.js",
     "groupTitle": "anuncios"
   },
@@ -447,6 +447,7 @@ define({ "api": [
     "title": "Eliminar usuario",
     "name": "deleteUsuarios",
     "group": "usuarios",
+    "version": "1.0.0",
     "description": "<p>Para eliminar un usuario existente, hay que pasarle el id</p>",
     "permission": [
       {
@@ -506,7 +507,6 @@ define({ "api": [
         ]
       }
     },
-    "version": "0.0.0",
     "filename": "routes/api/v1/usuarios.js",
     "groupTitle": "usuarios"
   },
@@ -542,6 +542,7 @@ define({ "api": [
         }
       ]
     },
+    "version": "1.0.0",
     "examples": [
       {
         "title": "Example usage:",
@@ -562,7 +563,6 @@ define({ "api": [
         ]
       }
     },
-    "version": "0.0.0",
     "filename": "routes/api/v1/usuarios.js",
     "groupTitle": "usuarios"
   },
@@ -578,6 +578,7 @@ define({ "api": [
         "name": "none"
       }
     ],
+    "version": "1.0.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -645,7 +646,6 @@ define({ "api": [
         }
       ]
     },
-    "version": "0.0.0",
     "filename": "routes/api/v1/usuarios.js",
     "groupTitle": "usuarios"
   },
@@ -668,6 +668,7 @@ define({ "api": [
         "type": "curl"
       }
     ],
+    "version": "1.0.0",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -737,12 +738,11 @@ define({ "api": [
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "{\n  \"result\": false,\n  \"err\": \"El usuario no existe\"\n }",
+          "content": "{\n  \"result\": false,\n  \"err\": \"El usuario El usuario ya está cogido\"\n }",
           "type": "json"
         }
       ]
     },
-    "version": "0.0.0",
     "filename": "routes/api/v1/usuarios.js",
     "groupTitle": "usuarios"
   }

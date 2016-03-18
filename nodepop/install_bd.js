@@ -111,10 +111,10 @@ eliminarTodosAnuncios()
     .then(function(){
 		return leerArchivo('./usuarios.json');
 	})
-	.then(function(){
-		process.exit();
-	})
 	.then(guardarUsuarios)
+    .then(function(){
+        process.exit();
+    })
     .catch(function(err) {
         console.log("ERROR EN EL PROCESO DE CARGA DE BD");
         process.exit(1);

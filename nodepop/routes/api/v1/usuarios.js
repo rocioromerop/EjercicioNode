@@ -183,7 +183,7 @@ router.post('/', function(req, res) {
  *      }
  */
 
-router.put('/:id', function(req, res) {
+router.put('/:id', auth(), function(req, res) {
     var options = {};
     User.findOne({nombre: req.body.nombre}, function(err, rows){
       if(err){
@@ -233,7 +233,7 @@ router.put('/:id', function(req, res) {
  *
  */
 
-router.delete('/:id', function(req, res){
+router.delete('/:id', auth(), function(req, res){
     let nombre = req.params.nombre;
     User.remove({_id: req.params.id}, function(err){
         if(err) return res.json({result: false, err: 'No se ha podido eliminar el usuario (ha ocurrido un problema en la base de datos, o el usuario no existe'});

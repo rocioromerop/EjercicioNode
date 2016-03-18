@@ -13,6 +13,13 @@
 "precio": 50.00,
 "foto": "iphone.png",
 "tags": [ "lifestyle", "mobile"]
+},
+{
+"nombre": "iPhone 3GSS",
+"venta": false,
+"precio": 99.00,
+"foto": "iphoneS.png",
+"tags": [ "lifestyleS", "mobileS"]
 }
 ]
 }

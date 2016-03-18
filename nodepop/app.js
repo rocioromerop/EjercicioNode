@@ -20,7 +20,6 @@ require('./models/anuncioModel');
 var apiUsers = require('./routes/api/v1/usuarios');
 var apiAnuncios = require('./routes/api/v1/anuncios');
 
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -32,6 +31,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/images/anuncios/', express.static(__dirname + '/public/images'));
+
+//lo primero es la 'ficticia' y lo segundo la 'real'
 
 // Rutas de web
 app.use('/', routes);

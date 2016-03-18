@@ -2,6 +2,7 @@
 
 var conn = require('./lib/connectMongoose');
 
+var async = require('async');
 var mongoose = require('mongoose');
 
 require('./models/anuncioModel');
@@ -16,68 +17,105 @@ var fs = require('fs');
 // PARA LEER EL anuncios.json
 // leer fichero de texto en utf8 y guardarlo en la base de datos
 
-fs.readFile('./anuncios.json', {encoding: "utf8"}, function(err, data){
-	if (err){
-		console.log("ERROR!" + err);
-		return;
-	} 
-	Anuncio.remove(function(err){
-		if(err){
-			console.log("Error al eliminar los anuncios existentes");
-			return;
-		}
-		console.log("Se eliminan los anuncios");
-		var paquete = JSON.parse(data);
-	
-		//Recorriendo todos los anuncios; guardar en la base de datos paquete.anuncios[i]
-		for(var i = 0; i<2; i++){
-			var anuncio = new Anuncio(paquete.anuncios[i]);
-			anuncio.save(function(err, anuncioCreado){
-			if(err){
-				 console.log("error");
-				 return;
-			}
-				console.log('anuncioCreado' + anuncioCreado);
-			});
-	}
-	console.log(paquete);
-	
-	});
+function leerArchivo(archivo) {
+    return new Promise(function(resolve, reject) {
+        fs.readFile(archivo, { encoding: "utf8" }, function(err, data) {
+            if (err) {
+                reject(err);
+            }
+            resolve(data);
+        })
+    })
+};
 
-});
+function eliminarTodosAnuncios() {
+    return new Promise(function(resolve, reject) {
+        Anuncio.remove(function(err) {
+            if (err) {
+                reject(err);
+            }
+            resolve();
+        })
+    })
+}
 
-// PARA LEER EL usuarios.json
+function guardarAnuncios(anuncioss) { //anuncios quiero que sea JSON.parse(data)
+    return new Promise(function(resolve, reject) {
+		let ann = JSON.parse(anuncioss);
+		console.log('ANN: ', ann);
+		console.log('ann.anuncios', ann.anuncios);
+    	async.eachSeries(ann.anuncios, function cada(item, siguiente) {
+        	console.log("CADA ITEM: ", item);
+			let anuncio = new Anuncio(item);
+            anuncio.save(function(err) {
+	            if (err) {
+	                siguiente(err);
+	            }
+	            console.log("Se guardan los anuncios");
+	            siguiente(null); //Si aqui hay un error, se va a la función finalizadora y termina. Si tiene valor null, sigue con el siguiente elemento.
+        	});
+        }, 
+        function fin(err) {
+        	if(err != null){
+        		reject("ERROR AL AÑADIR ANUNCIOS");
+        	}
+            resolve(console.log("ACABO DE CREAR LOS ANUNCIOS"));
+        });
+	    
+    })
+}
 
-fs.readFile('./usuarios.json', {encoding: "utf8"}, function(err, data){
-	if (err){
-		console.log("ERROR!" + err);
-		return;
-	} 
+function eliminarTodosUsuarios() {
+    return new Promise(function(resolve, reject) {
+        User.remove(function(err) {
+            if (err) {
+                reject(err);
+            }
+            console.log("Se eliminan los usuarios");
+            resolve();
+        })
+    })
+}
 
-	User.remove(function(err){
-		if(err){
-			console.log("Error al eliminar los usuarios existentes");
-			return;
-		}
-		console.log("Se eliminan los usuarios");
-		var paquete2 = JSON.parse(data);
-		
-		//Recorriendo todos los usuarios; guardar en la base de datos paquete2.usuarios[i]
-		for(var i = 0; i<2; i++){
-			var usuario = new User(paquete2.usuarios[i]);
-			usuario.save(function(err, usuarioCreado){
-			if(err){	
-				 console.log("error");
-				 return;
-			}
-			console.log('usuarioCreado' + usuarioCreado);
-			});
 
-		}
+function guardarUsuarios(usuarioss) { //anuncios quiero que sea JSON.parse(data)
+    return new Promise(function(resolve, reject) {
+		let uss = JSON.parse(usuarioss);
+    	async.eachSeries(uss.usuarios, function cada(item, siguiente) {
+        	console.log("CADA ITEM: ", item);
+			let usuario = new User(item);
+            usuario.save(function(err) {
+	            if (err) {
+	                siguiente(err);
+	            }
+	            console.log("Se guardan los usuarios");
+	            siguiente(null); //Si aqui hay un error, se va a la función finalizadora y termina. Si tiene valor null, sigue con el siguiente elemento.
+        	});
+        }, 
+        function fin(err) {
+        	if(err != null){
+        		reject("ERROR AL AÑADIR USUARIOS");
+        	}
+            resolve(console.log("ACABO DE CREAR LOS USUARIOS"));
+        });
+	    
+    })
+}
 
-		console.log(paquete2);
-		console.log("FIN");
-	});
-
-	
-});
+eliminarTodosAnuncios()
+    .then(function(){
+    	return leerArchivo('./anuncios.json'); 
+	})
+    .then(guardarAnuncios)
+    .then(eliminarTodosUsuarios)
+    .then(function(){
+		return leerArchivo('./usuarios.json');
+	})
+	.then(function(){
+		process.exit();
+	})
+	.then(guardarUsuarios)
+    .catch(function(err) {
+        console.log("ERROR EN EL PROCESO DE CARGA DE BD");
+        process.exit(1);
+    });
